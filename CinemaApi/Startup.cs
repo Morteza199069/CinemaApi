@@ -30,6 +30,7 @@ namespace CinemaApi
         {
 
             services.AddControllers();
+            services.AddMvc().AddXmlSerializerFormatters();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "CinemaApi", Version = "v1" });
@@ -42,7 +43,7 @@ namespace CinemaApi
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, CinemaDbContext dbContext)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
@@ -57,7 +58,6 @@ namespace CinemaApi
 
             app.UseAuthorization();
 
-            dbContext.Database.EnsureCreated();
 
             app.UseEndpoints(endpoints =>
             {
