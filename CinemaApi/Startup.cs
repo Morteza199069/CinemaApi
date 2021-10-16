@@ -51,6 +51,7 @@ namespace CinemaApi
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "CinemaApi v1"));
             }
+            app.UseStaticFiles();
 
             app.UseHttpsRedirection();
 
