@@ -29,12 +29,12 @@ namespace CinemaApi.Controllers
         }
 
         [HttpPost]
-        public IActionResult Post([FromBody] User user)
+        public IActionResult Register([FromBody] User user)
         {
             var userWithSameEmail = _dbContext.Users.SingleOrDefault(u => u.Email == user.Email);
             if (userWithSameEmail != null)
             {
-                return BadRequest("Usr with the same email already exists.");
+                return BadRequest("User with the same email already exists.");
             }
 
             var userObj = new User()
