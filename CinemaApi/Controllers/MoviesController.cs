@@ -24,8 +24,11 @@ namespace CinemaApi.Controllers
 
         [Authorize]
         [HttpGet("[action]")]
-        public IActionResult AllMovies()
+        public IActionResult AllMovies(string sort, int? pageNumber, int? pageSize)
         {
+            var currentpageNumber = pageNumber ?? 1;
+            var currentPageSize = pageSize ?? 5;
+
             var movies = from movie in _dbContext.Movies
                          select new
                          {
@@ -37,16 +40,38 @@ namespace CinemaApi.Controllers
                              Genre = movie.Genre,
                              ImageUrl = movie.ImageUrl
                          };
-            return Ok(movies);
+            switch (sort)
+            {
+                case "desc":
+                    return Ok(movies.Skip((currentpageNumber - 1) * currentPageSize).Take(currentPageSize).OrderByDescending(m => m.Rating));
+                case "asc":
+                    return Ok(movies.Skip((currentpageNumber - 1) * currentPageSize).Take(currentPageSize).OrderBy(m => m.Rating));
+                default:
+                    return Ok(movies);
+            }
         }
 
+        [Authorize]
+        [HttpGet("[action]")]
+        public IActionResult FindMovies(string movieName)
+        {
+            var movies = from movie in _dbContext.Movies
+                         where movie.Name.StartsWith(movieName)
+                         select new
+                         {
+                             Id = movie.Id,
+                             Name = movie.Name,
+                             ImageUrl = movie.ImageUrl
+                         };
+            return Ok(movies);
+        }
 
         [Authorize]
         [HttpGet("[action]/{id}")]
         public IActionResult MovieDetail(int id)
         {
             var movie = _dbContext.Movies.Find(id);
-            if(movie==null)
+            if (movie == null)
             {
                 return NotFound();
             }
@@ -54,7 +79,7 @@ namespace CinemaApi.Controllers
             return Ok(movie);
         }
 
-        [Authorize(Roles =("Admin"))]
+        [Authorize(Roles = ("Admin"))]
         [HttpPost]
         public IActionResult Post([FromForm] Movie movieObj)
         {
